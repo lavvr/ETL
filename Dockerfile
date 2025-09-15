@@ -6,5 +6,7 @@ COPY . .
 
 RUN pip install --no-cache-dir -r requirements.txt
 
-CMD ["python", "etl.py"]
+
+
+CMD ["python", "main.py"]
 
