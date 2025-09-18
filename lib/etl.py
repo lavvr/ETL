@@ -11,12 +11,12 @@ from utils.logger import logger
 
 """Main module."""
 class App():
-    def handle(place='textf', processor=None):
+    def handle(place, processor=None):
 
         if place == 'textf':
             app()
-            
-        if place == 'db':
+
+        else:
             app_db()
 def app():
     

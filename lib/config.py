@@ -1,8 +1,12 @@
-HOST = "localhost"
-USER = "postgres"
-PASSWORD = "hard_password"
-DB_NAME = "etl_database"
-PORT = 5432
+class DBConstants():
+    def __init__(
+            HOST="localhost",
+            USER="postgres",
+            PASSWORD="hard_password",
+            DB_NAME="etl_database",
+            PORT=5432):
+        pass
+
 
 RAW_DATA_PATH = "../data/raw/text.txt"
 PROCESSED_DATA_PATH = "../data/processed/processed_text.txt"
