@@ -10,6 +10,14 @@ from config import *
 from utils.logger import logger
 
 """Main module."""
+class App():
+    def handle(place='textf', processor=None):
+
+        if place == 'textf':
+            app()
+            
+        if place == 'db':
+            app_db()
 def app():
     
     client = FileClient()
@@ -104,3 +112,6 @@ def app_db():
         
 
     logger.info("DATABASE ETL process successfully completed")
+
+
+    #класс c методом 

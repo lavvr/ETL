@@ -1,21 +1,30 @@
+from abc import ABC
+
 import psycopg2
 
 from utils.logger import logger
 from config import DB_NAME, USER, PASSWORD, HOST, PORT
 
-class FileClient:
+class BaseClient(ABC):
+    def read(self, *args):
+        pass
+
+    def write(self, *args):
+        pass
+
+class FileClient(BaseClient):
     def __init__(self):
         self.logger = logger
 
     def read(self, filepath):
         with open(filepath, 'r', encoding='utf-8') as f:
             return f.readlines()
-    
+
     def write(self, filepath, data):
         with open(filepath, 'w', encoding='utf-8') as f:
             f.writelines(data)
 
-class DatabaseClient:
+class DatabaseClient(BaseClient):
 
     def __init__(self, 
                  dbname=DB_NAME,

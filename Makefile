@@ -3,7 +3,7 @@
 build:
 	docker build -t app_code .
 run:
-	docker run --name app_container -v "app_volume:/app app_code
+	docker run --name app_container -v "{PWD}:/app app_code
 
 up:
 	docker compose up
