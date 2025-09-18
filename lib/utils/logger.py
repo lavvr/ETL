@@ -22,7 +22,7 @@ class ETLLogger:
             if log_file_path is None:
                 log_file_path = '../../etl.log'
 
-            file_handler = logging.FileHandler()
+            file_handler = logging.FileHandler(log_file_path)
             file_handler.setFormatter(formatter)
             self.logger.addHandler(file_handler)
 
@@ -35,8 +35,8 @@ class ETLLogger:
     def warning(self, message):
         self.logger.warning(message)
 
-    def error(self, message, info):
-        self.logger.error(message, exc_info=info)
+    def error(self, message):
+        self.logger.error(message)
     
     def critical(self, message):
         self.logger.critical(message)

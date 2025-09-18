@@ -1,6 +1,6 @@
 import psycopg2
 
-from ..utils.logger import logger
+from utils.logger import logger
 from config import DB_NAME, USER, PASSWORD, HOST, PORT
 
 class FileClient:
@@ -19,14 +19,14 @@ class DatabaseClient:
 
     def __init__(self, 
                  dbname=DB_NAME,
-                 usr=USER,
+                 user=USER,
                  password=PASSWORD,
                  host=HOST,
                  port=PORT):
         
         self.connection_params = {
             'dbname': dbname,
-            'usr': usr,
+            'user': user,
             'password': password,
             'host': host,
             'port': port
@@ -58,23 +58,23 @@ class DatabaseClient:
             with self.connection.cursor() as cursor:
                 cursor.execute(query)
 
-            if cursor.description:
-                columns = [desc[0] for desc in cursor.description]
-                results = []
+                if cursor.description:
+                    columns = [desc[0] for desc in cursor.description if desc[0] != "id"]
+                    results = []
 
-                for row in cursor.fetchall():
-                    results.append(dict(zip(columns, row)))
-                    self.logger.info("Query has made successfully")
+                    for row in cursor.fetchall():
+                        results.append(', '.join([row[1] + ' ' + str(row[2])]))
+                        self.logger.info("Query has made successfully")
 
-                return results
+                    return results, columns
 
-            else:
-                cursor.commit()
-                return []
+                else:
+                    cursor.commit()
+                    return []
             
         except Exception as e:
             self.connection.rollback()
-            self.logger.error(f"Query execution has failed: {str(e)}", exc_info=True)
+            self.logger.error(f"Query execution has failed: {str(e)}")
             raise       
     
     def load_data(self, table, data):
@@ -83,12 +83,14 @@ class DatabaseClient:
             self.logger.warning("There is no data to load")
             return 0
 
-        columns = list(data[0].keys())
+        columns = data[0]
         columns_str = ", ".join(columns)
         placeholders= ", ".join(["%s"] * len(columns))
+        
 
         query = f"INSERT INTO {table} COLUMNS ({columns_str}) VALUES ({placeholders})"
-        values = [tuple(item[col] for col in columns) for item in data]
+        # values = [tuple(item[col] for col in columns) for item in data]
+        values = data[1]
 
         try:
             with self.connection.cursor() as cursor:
@@ -97,7 +99,7 @@ class DatabaseClient:
                 self.logger.info(f"Successfully inserted {len(data)} rows.")
 
         except psycopg2.Error as e:
-            self.logger.error(f"Data load process has failed: {str(e)}", exc_info=True)
+            self.logger.error(f"Data load process has failed: {str(e)}")
             raise
 
     

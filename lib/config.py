@@ -1,5 +1,5 @@
 HOST = "localhost"
-USER = "etl_user"
+USER = "postgres"
 PASSWORD = "hard_password"
 DB_NAME = "etl_database"
 PORT = 5432
