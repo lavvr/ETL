@@ -1,4 +1,5 @@
 from abc import ABC
+from typing import List
 
 import psycopg2
 
@@ -44,7 +45,7 @@ class DatabaseClient(BaseClient):
         self.connection = None
         self.logger = logger
 
-    def connect(self):
+    def connect(self) -> None:
         
         try:
 
@@ -54,12 +55,12 @@ class DatabaseClient(BaseClient):
             logger.error('Cannot connect to database')
             raise
     
-    def disconnect(self):
+    def disconnect(self) -> None:
         if self.connection:
             self.connection.close()
             self.logger.info("Connection has been closed")
 
-    def execute(self, query):
+    def execute(self, query: str) -> List[str]:
         if self.connection is None:
             self.connect()
 
@@ -86,7 +87,7 @@ class DatabaseClient(BaseClient):
             self.logger.error(f"Query execution has failed: {str(e)}")
             raise       
     
-    def load_data(self, table, data):
+    def load_data(self, table: str, data: tuple) -> None:
 
         if not data:
             self.logger.warning("There is no data to load")
@@ -112,24 +113,24 @@ class DatabaseClient(BaseClient):
             raise
 
     
-    def update_data(self, query, params=None):
+    # def update_data(self, query:str, params:=None):
     
-        self.logger.info(f"Updating data with query: {query}")
+    #     self.logger.info(f"Updating data with query: {query}")
         
-        if self.connection is None:
-            self.connect()
+    #     if self.connection is None:
+    #         self.connect()
         
-        try:
-            with self.connection.cursor() as cursor:
-                cursor.execute(query, params)
-                self.connection.commit()
-                updated_count = cursor.rowcount
-                self.logger.info(f"Updated {updated_count} rows")
-                return updated_count
-        except psycopg2.Error as e:
-            self.connection.rollback()
-            self.logger.error(f"Data update failed: {str(e)}", exc_info=True)
-            raise
+    #     try:
+    #         with self.connection.cursor() as cursor:
+    #             cursor.execute(query, params)
+    #             self.connection.commit()
+    #             updated_count = cursor.rowcount
+    #             self.logger.info(f"Updated {updated_count} rows")
+    #             return updated_count
+    #     except psycopg2.Error as e:
+    #         self.connection.rollback()
+    #         self.logger.error(f"Data update failed: {str(e)}", exc_info=True)
+    #         raise
     
     def create_table(self, table_name: str, schema: str) -> None:
         

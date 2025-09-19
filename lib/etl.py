@@ -18,7 +18,7 @@ class App():
 
         else:
             app_db()
-def app():
+def app() -> None:
     
     client = FileClient()
     processor = TextProcessor()
@@ -49,15 +49,10 @@ def app():
     logger.info("ETL process successfully completed")
 
 
-def app_db():
+def app_db() -> None:
     logger.info("Starting DATABASE ETL process")
     
-    db_client = DatabaseClient(
-        dbname=DB_NAME,
-        user=USER,
-        password=PASSWORD,
-        host=HOST,
-    )
+    db_client = DatabaseClient(**db_consts.db_params)
 
     processor = TextProcessor()
     try:

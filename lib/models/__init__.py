@@ -1,3 +1,3 @@
-from .models import smth
+from .models import BERTClassifier
 
-__all__ = []
+__all__ = ['BERTClassifier']
