@@ -1,3 +1,3 @@
-from .models import BERTClassifier
-
-__all__ = ['BERTClassifier']
+from .models import ClassificationMaster
+# BERTClassifier
+__all__ = ['ClassificationMaster']

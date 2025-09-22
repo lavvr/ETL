@@ -7,11 +7,11 @@ class DBConstants():
             PORT=5432):
         
         self.db_params = {
-        self.host:HOST,
-        self.user:USER,
-        self.password:PASSWORD,
-        self.db_name:DB_NAME,
-        self.port:PORT
+        'host':HOST,
+        'user':USER,
+        'password':PASSWORD,
+        'dbname':DB_NAME,
+        'port':PORT
         }
         
 

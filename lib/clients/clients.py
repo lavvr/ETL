@@ -4,10 +4,14 @@ from typing import List
 import psycopg2
 
 from utils.logger import logger
-from config import DB_NAME, USER, PASSWORD, HOST, PORT
+from config import db_consts
+
 
 class BaseClient(ABC):
-    def read(self, *args):
+    def __init__(self):
+        self.logger = logger
+        
+    def read(self, *args, **kwargs):
         pass
 
     def write(self, *args):
@@ -27,20 +31,16 @@ class FileClient(BaseClient):
 
 class DatabaseClient(BaseClient):
 
-    def __init__(self, 
-                 dbname=DB_NAME,
-                 user=USER,
-                 password=PASSWORD,
-                 host=HOST,
-                 port=PORT):
+    # def __init__(self, 
+    #              dbname=DB_NAME,
+    #              user=USER,
+    #              password=PASSWORD,
+    #              host=HOST,
+    #              port=PORT): Либо оставить так, либо все таки через класс в конфиге, не знаю в общем
         
-        self.connection_params = {
-            'dbname': dbname,
-            'user': user,
-            'password': password,
-            'host': host,
-            'port': port
-        }
+    def __init__(self, **connection_params: dict):
+        
+        self.connection_params = db_consts.db_params
 
         self.connection = None
         self.logger = logger
@@ -60,7 +60,7 @@ class DatabaseClient(BaseClient):
             self.connection.close()
             self.logger.info("Connection has been closed")
 
-    def execute(self, query: str) -> List[str]:
+    def read(self, query: str) -> List[str]:
         if self.connection is None:
             self.connect()
 
@@ -73,7 +73,7 @@ class DatabaseClient(BaseClient):
                     results = []
 
                     for row in cursor.fetchall():
-                        results.append(', '.join([row[1] + ' ' + str(row[2])]))
+                        results.append(row[1] + ' ' + str(row[2]))
                         self.logger.info("Query has made successfully")
 
                     return results, columns
@@ -87,51 +87,32 @@ class DatabaseClient(BaseClient):
             self.logger.error(f"Query execution has failed: {str(e)}")
             raise       
     
-    def load_data(self, table: str, data: tuple) -> None:
+    def write(self, table: str, data: tuple) -> None:
 
         if not data:
             self.logger.warning("There is no data to load")
             return 0
 
-        columns = data[0]
+        columns = data[1]
         columns_str = ", ".join(columns)
         placeholders= ", ".join(["%s"] * len(columns))
         
 
-        query = f"INSERT INTO {table} COLUMNS ({columns_str}) VALUES ({placeholders})"
+        query = f"INSERT INTO {table} ({columns_str}) VALUES ({placeholders})"
         # values = [tuple(item[col] for col in columns) for item in data]
-        values = data[1]
+        values = [tuple(row.split()) for row in data[0]]
+        print(type(data), type(data[0]), values, data[0], len(data[0]))
 
         try:
             with self.connection.cursor() as cursor:
                 cursor.executemany(query, values)
                 self.connection.commit()
-                self.logger.info(f"Successfully inserted {len(data)} rows.")
+                self.logger.info(f"Successfully inserted {len(values)} rows.")
 
         except psycopg2.Error as e:
             self.logger.error(f"Data load process has failed: {str(e)}")
             raise
 
-    
-    # def update_data(self, query:str, params:=None):
-    
-    #     self.logger.info(f"Updating data with query: {query}")
-        
-    #     if self.connection is None:
-    #         self.connect()
-        
-    #     try:
-    #         with self.connection.cursor() as cursor:
-    #             cursor.execute(query, params)
-    #             self.connection.commit()
-    #             updated_count = cursor.rowcount
-    #             self.logger.info(f"Updated {updated_count} rows")
-    #             return updated_count
-    #     except psycopg2.Error as e:
-    #         self.connection.rollback()
-    #         self.logger.error(f"Data update failed: {str(e)}", exc_info=True)
-    #         raise
-    
     def create_table(self, table_name: str, schema: str) -> None:
         
         query = f"CREATE TABLE IF NOT EXISTS {table_name} ({schema})"

@@ -18,6 +18,7 @@ class App():
 
         else:
             app_db()
+
 def app() -> None:
     
     client = FileClient()
@@ -63,7 +64,7 @@ def app_db() -> None:
         logger.error(f"Something went wrong during connection to database: {e}")
 
     try:
-        raw_data, columns = db_client.execute("select * from users")
+        raw_data, columns = db_client.read("select * from users")
         logger.info(f"Extracted {len(raw_data)} lines from file")
 
     except Exception as e:
@@ -78,11 +79,11 @@ def app_db() -> None:
         logger.error(f"ETL process failed on transforming stage: {str(e)}")
         raise
     try:
-        full_data = (columns, processed_data)
-        db_client.load_data(table="users", data=full_data)
+        full_data = (processed_data, columns)
+        db_client.write(table="users", data=full_data)
 
     except Exception as e:
-        logger.error(f"ETL process failed on transforming stage: {str(e)}")
+        logger.error(f"ETL process failed on loading stage: {str(e)}")
         raise
     
     try:
