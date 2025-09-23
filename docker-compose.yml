@@ -6,6 +6,7 @@ services:
       POSTGRES_DB: etl_database
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: hard_password
+
     volumes: 
       - ./postgres_data:/var/lib/postgresql/data
     ports:
@@ -31,4 +32,4 @@ services:
     volumes:
       - .:/app
     working_dir: /app
-    command: python -m lib.main
+    command: python lib/main.py

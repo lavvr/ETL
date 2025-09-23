@@ -1,6 +1,6 @@
 class DBConstants():
     def __init__(self,
-            HOST="localhost",
+            HOST="postgres",
             USER="postgres",
             PASSWORD="hard_password",
             DB_NAME="etl_database",

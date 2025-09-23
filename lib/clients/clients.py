@@ -100,7 +100,7 @@ class DatabaseClient(BaseClient):
 
         query = f"INSERT INTO {table} ({columns_str}) VALUES ({placeholders})"
         # values = [tuple(item[col] for col in columns) for item in data]
-        values = [tuple(row.split()) for row in data[0]]
+        values = [tuple(row.rsplit(' ', 1)) for row in data[0]]
         print(type(data), type(data[0]), values, data[0], len(data[0]))
 
         try:
