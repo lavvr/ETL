@@ -6,12 +6,12 @@ services:
       POSTGRES_DB: etl_database
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: hard_password
-    volumes:
-      - 
+    volumes: 
+      - ./postgres_data:/var/lib/postgresql/data
     ports:
-      - "5432:5432"
+      - "5433:5432"
     healthcheck:
-      test: ["executable", "arg"]
+      test: ["CMD-SHELL", "pg_isready -U postgres -d etl_database"]
       interval: 1m30s
       timeout: 30s
       retries: 5
@@ -22,16 +22,13 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-      environment:
-        POSTGRES_HOST: postgres
+    environment:
+      POSTGRES_HOST: postgres
       POSTGRES_PORT: 5432
       POSTGRES_DB: etl_database
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: etl_password
-      volumes:
-      - $(pwd):/app
-      working_dir: /app
+      POSTGRES_PASSWORD: hard_password
+    volumes:
+      - .:/app
+    working_dir: /app
     command: python -m lib.main
-
-volumes:
-  postgres_data:

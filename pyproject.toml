@@ -55,3 +55,7 @@ select = [
 
 [tool.uv]
 package = true
+
+[tool.poetry.dependencies]
+python = "^3.12"
+psycopg2 = "^2.9.3"
