@@ -8,5 +8,8 @@ run:
 up:
 	docker compose up
 
+reup:
+	docker compose up --build
+
 down:
 	docker compose down
